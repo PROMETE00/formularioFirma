@@ -1,0 +1,46 @@
+
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .signature-container {
+            border: 1px solid #ccc;
+            margin: 20px 0;
+            padding: 10px;
+        }
+        canvas {
+            border: 1px dashed #aaa;
+            background-color: #f9f9f9;
+        }
+        .button-container {
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button.clear {
+            background-color: #f44336;
+        }
+        #signatureData {
+            display: none;
+        }

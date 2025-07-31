@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario con Firma Digital</title>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature-pad.umd.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Formulario con Firma Digital</h1>
+    <form id="signatureForm">
+        <div class="form-group">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Firma:</label>
+            <div class="signature-container">
+                <canvas id="signatureCanvas" width="700" height="200"></canvas>
+                <div class="button-container">
+                    <button type="button" id="clearButton" class="clear">Limpiar Firma</button>
+                </div>
+                <input type="hidden" id="signatureData" name="signatureData">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <button type="submit">Enviar</button>
+        </div>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('signatureCanvas');
+            const signaturePad = new SignaturePad(canvas);
+            const clearButton = document.getElementById('clearButton');
+            const form = document.getElementById('signatureForm');
+            const signatureData = document.getElementById('signatureData');
+            
+            // Ajustar canvas para pantallas de alta resolución
+            function resizeCanvas() {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                canvas.width = canvas.offsetWidth * ratio;
+                canvas.height = canvas.offsetHeight * ratio;
+                canvas.getContext('2d').scale(ratio, ratio);
+                signaturePad.clear(); // Limpiar en caso de redimensionamiento
+            }
+            
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            
+            // Limpiar firma
+            clearButton.addEventListener('click', function() {
+                signaturePad.clear();
+            });
+            
+            // Enviar formulario
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (signaturePad.isEmpty()) {
+                    alert("Por favor, proporcione su firma.");
+                    return;
+                }
+                
+                // Convertir firma a Base64 (PNG)
+                const dataURL = signaturePad.toDataURL('image/png');
+                signatureData.value = dataURL;
+                
+                // Aquí puedes enviar el formulario a tu servidor
+                // Por ahora solo mostramos los datos en consola
+                console.log("Nombre:", document.getElementById('nombre').value);
+                console.log("Firma (Base64):", dataURL);
+                
+                alert("Formulario enviado correctamente. Revisa la consola para ver los datos.");
+                
+                // Para enviar realmente el formulario, descomenta la siguiente línea:
+                // form.submit();
+            });
+        });
+    </script>
+</body>
+</html>
