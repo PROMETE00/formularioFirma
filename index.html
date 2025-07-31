@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario con Firma Digital</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.5.3/signature_pad.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Formulario Digital</h1>
+            <p>Complete sus datos y proporcione su firma electrónica</p>
+        </div>
+        
+        <div class="form-content">
+            <form id="signatureForm">
+                <div class="form-group">
+                    <label for="nombre">Nombre Completo:</label>
+                    <input type="text" id="nombre" name="nombre" required placeholder="Ingrese su nombre completo">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Correo Electrónico:</label>
+                    <input type="email" id="email" name="email" required placeholder="ejemplo@correo.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>Firma Digital:</label>
+                    <div class="signature-container">
+                        <div class="signature-instruction">
+                            Por favor, firme en el área de abajo usando su mouse, dedo o stylus
+                        </div>
+                        <canvas id="signatureCanvas" width="700" height="200"></canvas>
+                        <div class="button-container">
+                            <button type="button" id="clearButton" class="clear">Limpiar Firma</button>
+                            <button type="button" id="undoButton" class="undo">Deshacer</button>
+                        </div>
+                        <input type="hidden" id="signatureData" name="signatureData">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="submit-btn">Enviar Formulario</button>
+                </div>
+            </form>
+            
+            <!-- Área de vista previa -->
+            <div id="preview" class="preview-section" style="display: none;">
+                <h3>Vista Previa del Documento</h3>
+                <div class="preview-content">
+                    <div class="preview-data">
+                        <p><strong>Nombre:</strong> <span id="previewNombre"></span></p>
+                        <p><strong>Email:</strong> <span id="previewEmail"></span></p>
+                        <p><strong>Fecha:</strong> <span id="previewFecha"></span></p>
+                    </div>
+                    <div class="preview-signature">
+                        <p><strong>Firma:</strong></p>
+                        <img id="previewSignatureImg" alt="Firma" style="border: 1px solid #ddd; max-width: 300px;">
+                    </div>
+                    <div class="preview-actions">
+                        <button type="button" id="downloadPDF" class="download-btn">Descargar PDF</button>
+                        <button type="button" id="newForm" class="new-form-btn">Nuevo Formulario</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar que la librería se haya cargado
+            if (typeof SignaturePad === 'undefined') {
+                alert('Error: No se pudo cargar la librería de firma. Por favor recarga la página.');
+                return;
+            }
+
+            const canvas = document.getElementById('signatureCanvas');
+            const clearButton = document.getElementById('clearButton');
+            const undoButton = document.getElementById('undoButton');
+            const form = document.getElementById('signatureForm');
+            const signatureData = document.getElementById('signatureData');
+            const preview = document.getElementById('preview');
+            
+            // Configurar el canvas
+            function resizeCanvas() {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                canvas.width = canvas.offsetWidth * ratio;
+                canvas.height = canvas.offsetHeight * ratio;
+                canvas.getContext("2d").scale(ratio, ratio);
+                canvas.style.width = canvas.offsetWidth + "px";
+                canvas.style.height = canvas.offsetHeight + "px";
+            }
+            
+            resizeCanvas();
+            
+            // Crear instancia de SignaturePad
+            const signaturePad = new SignaturePad(canvas, {
+                backgroundColor: 'rgb(255, 255, 255)',
+                penColor: 'rgb(0, 0, 0)',
+                velocityFilterWeight: 0.7,
+                minWidth: 0.5,
+                maxWidth: 2.5
+            });
+            
+            let signatureHistory = [];
+            
+            // Redimensionar cuando cambie el tamaño de ventana
+            window.addEventListener("resize", resizeCanvas);
+            
+            // Guardar historial
+            signaturePad.onBegin = function() {
+                signatureHistory.push(signaturePad.toDataURL());
+            };
+            
+            // Prevenir menú contextual
+            canvas.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+            });
+            
+            // Limpiar firma
+            clearButton.addEventListener('click', function() {
+                signaturePad.clear();
+                signatureHistory = [];
+            });
+            
+            // Deshacer
+            undoButton.addEventListener('click', function() {
+                if (signatureHistory.length > 0) {
+                    signatureHistory.pop();
+                    signaturePad.clear();
+                    if (signatureHistory.length > 0) {
+                        signaturePad.fromDataURL(signatureHistory[signatureHistory.length - 1]);
+                    }
+                }
+            });
+            
+            // Manejar envío del formulario
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const nombre = document.getElementById('nombre').value.trim();
+                const email = document.getElementById('email').value.trim();
+                
+                if (!nombre || !email) {
+                    alert("Por favor, complete todos los campos obligatorios.");
+                    return;
+                }
+                
+                if (signaturePad.isEmpty()) {
+                    alert("Por favor, proporcione su firma.");
+                    return;
+                }
+                
+                const dataURL = signaturePad.toDataURL();
+                signatureData.value = dataURL;
+                
+                showPreview(nombre, email, dataURL);
+                
+                console.log({
+                    nombre: nombre,
+                    email: email,
+                    firma: dataURL,
+                    fecha: new Date().toLocaleString('es-ES')
+                });
+            });
+            
+            // Mostrar vista previa
+            function showPreview(nombre, email, firmaURL) {
+                document.getElementById('previewNombre').textContent = nombre;
+                document.getElementById('previewEmail').textContent = email;
+                document.getElementById('previewFecha').textContent = new Date().toLocaleString('es-ES');
+                document.getElementById('previewSignatureImg').src = firmaURL;
+                
+                form.style.display = 'none';
+                preview.style.display = 'block';
+            }
+            
+            // Nuevo formulario
+            document.getElementById('newForm').addEventListener('click', function() {
+                form.reset();
+                signaturePad.clear();
+                signatureHistory = [];
+                form.style.display = 'block';
+                preview.style.display = 'none';
+            });
+            
+            // Descargar archivo
+            document.getElementById('downloadPDF').addEventListener('click', function() {
+                const nombre = document.getElementById('previewNombre').textContent;
+                const email = document.getElementById('previewEmail').textContent;
+                const fecha = document.getElementById('previewFecha').textContent;
+                const firmaURL = document.getElementById('previewSignatureImg').src;
+                
+                const element = document.createElement('a');
+                const fileContent = `
+DOCUMENTO FIRMADO DIGITALMENTE
+================================
+
+Nombre: ${nombre}
+Email: ${email}
+Fecha: ${fecha}
+
+Firma Digital: ${firmaURL}
+
+Este documento ha sido firmado digitalmente.
+                `;
+                
+                const file = new Blob([fileContent], {type: 'text/plain'});
+                element.href = URL.createObjectURL(file);
+                element.download = `documento_firmado_${nombre.replace(/\s+/g, '_')}.txt`;
+                element.click();
+                
+                alert("Documento descargado correctamente.");
+            });
+        });
+    </script>
+</body>
+</html>
