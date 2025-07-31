@@ -60,7 +60,7 @@
                         <img id="previewSignatureImg" alt="Firma" style="border: 1px solid #ddd; max-width: 300px;">
                     </div>
                     <div class="preview-actions">
-                        <button type="button" id="downloadPDF" class="download-btn">Descargar PDF</button>
+                        <button type="button" id="downloadPDF" class="download-btn">Descargar BASE64 TXT</button>
                         <button type="button" id="newForm" class="new-form-btn">Nuevo Formulario</button>
                     </div>
                 </div>
@@ -195,18 +195,16 @@
                 
                 const element = document.createElement('a');
                 const fileContent = `
-DOCUMENTO FIRMADO DIGITALMENTE
-================================
+                DOCUMENTO FIRMADO DIGITALMENTE
+                ================================
 
-Nombre: ${nombre}
-Email: ${email}
-Fecha: ${fecha}
+                Nombre: ${nombre}
+                Email: ${email}
+                Fecha: ${fecha}
 
-Firma Digital: ${firmaURL}
+                Firma Digital: ${firmaURL}
 
-Este documento ha sido firmado digitalmente.
-                `;
-                
+                Este documento ha sido firmado digitalmente.             `;              
                 const file = new Blob([fileContent], {type: 'text/plain'});
                 element.href = URL.createObjectURL(file);
                 element.download = `documento_firmado_${nombre.replace(/\s+/g, '_')}.txt`;
