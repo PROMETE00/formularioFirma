@@ -1,0 +1,32 @@
+/* Estilos generales adicionales */
+body {
+    padding: 20px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Estilos para impresión */
+@media print {
+    body {
+        background: white;
+        padding: 0;
+    }
+    
+    .container {
+        box-shadow: none;
+        border-radius: 0;
+    }
+    
+    .header {
+        background: #333 !important;
+        -webkit-print-color-adjust: exact;
+    }
+    
+    .button-container,
+    .preview-actions,
+    .navBar {
+        display: none;
+    }
+}
