@@ -9,13 +9,13 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
-    padding: 20px;
     line-height: 1.6;
+    color: #333;
 }
 
 .container {
     max-width: 800px;
-    margin: 0 auto;
+    margin: 20px auto;
     background: white;
     border-radius: 15px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
@@ -42,12 +42,12 @@ body {
 }
 
 /* Contenido del formulario */
-.form-content {
-    padding: 40px;
+.form-content, .form {
+    padding: 30px;
 }
 
 .form-group {
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 }
 
 label {
@@ -60,7 +60,8 @@ label {
 
 /* Campos de entrada */
 input[type="text"],
-input[type="email"] {
+input[type="email"],
+select {
     width: 100%;
     padding: 15px;
     border: 2px solid #e1e8ed;
@@ -71,7 +72,8 @@ input[type="email"] {
 }
 
 input[type="text"]:focus,
-input[type="email"]:focus {
+input[type="email"]:focus,
+select:focus {
     outline: none;
     border-color: #4facfe;
     box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
@@ -113,14 +115,13 @@ input::placeholder {
     cursor: crosshair;
     display: block;
     margin: 0 auto;
-    max-width: 100%;
-    height: 200px;
     width: 100%;
+    height: 200px;
     touch-action: none;
 }
 
 /* Contenedor de botones */
-.button-container {
+.button-container, .preview-actions {
     margin-top: 15px;
     display: flex;
     gap: 10px;
@@ -133,7 +134,8 @@ input::placeholder {
 .undo,
 .submit-btn,
 .download-btn,
-.new-form-btn {
+.new-form-btn,
+.save-db-btn {
     padding: 12px 25px;
     border: none;
     border-radius: 25px;
@@ -143,6 +145,9 @@ input::placeholder {
     transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .clear {
@@ -174,6 +179,7 @@ input::placeholder {
     font-size: 18px;
     margin-top: 20px;
     width: 100%;
+    justify-content: center;
 }
 
 .submit-btn:hover {
@@ -201,6 +207,17 @@ input::placeholder {
     background: #1976d2;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+}
+
+.save-db-btn {
+    background: #9c27b0;
+    color: white;
+}
+
+.save-db-btn:hover {
+    background: #7b1fa2;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(156, 39, 176, 0.3);
 }
 
 /* Sección de vista previa */
@@ -245,27 +262,45 @@ input::placeholder {
     text-align: center;
 }
 
-.preview-signature img {
+.preview-signature img, #resultSignatureImg {
     border: 1px solid #ddd;
     border-radius: 5px;
-    max-width: 300px;
+    max-width: 100%;
     max-height: 150px;
 }
 
-.preview-actions {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    flex-wrap: wrap;
+/* Alertas */
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+    font-size: 16px;
+    text-align: center;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.hidden {
+    display: none !important;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    body {
-        padding: 10px;
+    .container {
+        margin: 10px;
     }
     
-    .form-content {
+    .form-content, .form {
         padding: 20px;
     }
     
@@ -281,24 +316,18 @@ input::placeholder {
         height: 150px;
     }
     
-    .button-container {
+    .button-container, .preview-actions {
         flex-direction: column;
         align-items: center;
     }
     
     .clear,
-    .undo {
-        width: 150px;
-    }
-    
-    .preview-actions {
-        flex-direction: column;
-        align-items: center;
-    }
-    
+    .undo,
     .download-btn,
-    .new-form-btn {
-        width: 200px;
+    .new-form-btn,
+    .save-db-btn {
+        width: 100%;
+        justify-content: center;
     }
 }
 
@@ -307,18 +336,23 @@ input::placeholder {
         font-size: 1.8em;
     }
     
-    .form-content {
+    .form-content, .form {
         padding: 15px;
     }
     
     input[type="text"],
-    input[type="email"] {
+    input[type="email"],
+    select {
         padding: 12px;
         font-size: 14px;
     }
     
     #signatureCanvas {
         height: 120px;
+    }
+    
+    .preview-section {
+        padding: 20px;
     }
 }
 
@@ -351,30 +385,8 @@ button:disabled {
 
 /* Mejoras de accesibilidad */
 button:focus,
-input:focus {
+input:focus,
+select:focus {
     outline: 2px solid #4facfe;
     outline-offset: 2px;
-}
-
-/* Estilos para impresión */
-@media print {
-    body {
-        background: white;
-        padding: 0;
-    }
-    
-    .container {
-        box-shadow: none;
-        border-radius: 0;
-    }
-    
-    .header {
-        background: #333 !important;
-        -webkit-print-color-adjust: exact;
-    }
-    
-    .button-container,
-    .preview-actions {
-        display: none;
-    }
 }

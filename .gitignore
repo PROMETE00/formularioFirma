@@ -1,0 +1,9 @@
+# Archivos a ignorar
+/node_modules
+firebase-config.js
+package-lock.json
+.env
+.DS_Store
+
+# Archivos de configuración sensible
+js/firebase-config.js

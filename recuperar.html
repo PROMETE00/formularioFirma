@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Firma Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/general.css">
+    <link rel="stylesheet" href="css/navBar.css">
+    
+    <!-- Firebase SDK (versión modular) -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js';
+        import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js';
+        
+        // La configuración se carga desde el archivo externo
+        import { firebaseConfig } from './js/firebase-config.js';
+        
+        // Inicializa Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Hacer db disponible globalmente si es necesario
+        window.db = db;
+    </script>
+</head>
+<body>
+    <nav class="navBar">
+        <button onclick="location.href='index.html'">
+            <i class="fas fa-signature"></i> Firmar Documento
+        </button>
+        <button onclick="location.href='recuperar.html'" class="tab-active">
+            <i class="fas fa-key"></i> Recuperar Firma
+        </button>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>Recuperar Firma Digital</h1>
+            <p>Ingrese los datos para recuperar su firma</p>
+        </div>
+        
+        <form id="decryptForm" class="form">
+            <div class="form-group">
+                <label for="searchType">Buscar por:</label>
+                <select id="searchType" class="form-control">
+                    <option value="id">ID de Registro</option>
+                    <option value="nombre">Nombre</option>
+                    <option value="email">Correo Electrónico</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="searchValue" id="searchLabel">ID de Registro:</label>
+                <input type="text" id="searchValue" required placeholder="Ingrese el ID del registro">
+            </div>
+            
+            <div class="form-group">
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-search"></i> Recuperar Firma
+                </button>
+            </div>
+        </form>
+        
+        <!-- Resultado de la búsqueda -->
+        <div id="searchResult" class="preview-section hidden">
+            <h3>Resultado de la Búsqueda</h3>
+            <div class="preview-content">
+                <div class="preview-data">
+                    <p><strong>ID:</strong> <span id="resultId"></span></p>
+                    <p><strong>Nombre:</strong> <span id="resultNombre"></span></p>
+                    <p><strong>Email:</strong> <span id="resultEmail"></span></p>
+                    <p><strong>Fecha:</strong> <span id="resultFecha"></span></p>
+                </div>
+                <div class="preview-signature">
+                    <p><strong>Firma Recuperada:</strong></p>
+                    <img id="resultSignatureImg" alt="Firma Recuperada">
+                </div>
+            </div>
+            <div class="preview-actions">
+                <button id="downloadRecovered" class="download-btn">
+                    <i class="fas fa-image"></i> Descargar Imagen
+                </button>
+                <button id="newSearch" class="new-form-btn">
+                    <i class="fas fa-search"></i> Nueva Búsqueda
+                </button>
+            </div>
+        </div>
+        
+        <div id="searchStatus" class="alert hidden"></div>
+    </div>
+
+    <!-- Scripts externos -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    
+    <!-- Script de la aplicación (módulo ES6) -->
+    <script src="js/recuperar.js" type="module"></script>
+</body>
+</html>
